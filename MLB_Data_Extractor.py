@@ -57,3 +57,31 @@ df_sorted = df_filtered.sort_values(by='WAR', ascending=False)
 # Show top 10 hitters by wRC+
 print(df_sorted.head(10))
 
+from pybaseball import statcast_batter, playerid_lookup
+from datetime import datetime, timedelta
+
+print("\nStatcast Data for Juan Soto (Last 14 Days):")
+first_name = "Juan"
+last_name = "Soto"
+
+# Lookup player ID
+player_info = playerid_lookup(last_name, first_name)
+
+if player_info.empty:
+    print("Error: Player not found.")
+else:
+    player_id = player_info.iloc[0]["key_mlbam"]
+
+    # Get data from past 14 days
+    today = datetime.today().date()
+    start_date = today - timedelta(days=14)
+
+    df_statcast = statcast_batter(start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d"), player_id)
+
+    if df_statcast.empty:
+        print("No statcast data found for the last 14 days.")
+    else:
+        print(df_statcast.head())
+
+    print(df_statcast.columns)
+    print(df_statcast.head())
