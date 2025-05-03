@@ -1,87 +1,111 @@
-# Get batting stats for the 2023 season
+# Import packages
+from pybaseball import (
+    batting_stats,
+    statcast,
+    statcast_batter,
+    statcast_pitcher,
+    playerid_lookup
+)
+import pandas as pd
+from datetime import datetime, timedelta
+import requests
 
-from pybaseball import batting_stats
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning, message=".*errors='ignore'.*")
 
+
+# ---------------------------------------
+# 1. Get Season Batting Stats (2023)
+# ---------------------------------------
 stats = batting_stats(2023)
 print(stats.head())
 
-# Print all column names
-for col in stats.columns:
-    print(col)
+# Optional: print column names
+print("Batting Stats Columns:")
+print(stats.columns.tolist())
 
-
-
-# Get Real Time Game Status
-
-import requests
-import datetime
-
-today = datetime.datetime.now().strftime("%Y-%m-%d")
+# ---------------------------------------
+# 2. Real-Time Game Status
+# ---------------------------------------
+today = datetime.now().strftime("%Y-%m-%d")
 url = f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={today}&expand=schedule.linescore"
-
 res = requests.get(url)
 data = res.json()
 
+print(f"\nMLB Games on {today}:")
 for date in data['dates']:
     for game in date['games']:
         teams = game['teams']
-        away_team = teams['away']['team']['name']
-        home_team = teams['home']['team']['name']
-        away_score = teams['away'].get('score', 0)
-        home_score = teams['home'].get('score', 0)
-        status = game['status']['detailedState']
-        
-        print(f"{away_team} ({away_score}) at {home_team} ({home_score}) - Status: {status}")
+        away = teams['away']
+        home = teams['home']
+        print(f"{away['team']['name']} ({away.get('score', 0)}) at {home['team']['name']} ({home.get('score', 0)}) - Status: {game['status']['detailedState']}")
 
-
-from pybaseball import batting_stats
-import pandas as pd
-from datetime import datetime
-
-# Get the current year
+# ---------------------------------------
+# 3. Filter & Sort Hitters by WAR
+# ---------------------------------------
 year = datetime.now().year
-
-# Pull season batting stats
 df = batting_stats(year)
-
-# Select key sabermetric columns
 columns_of_interest = ['Name', 'Team', 'PA', 'HR', 'BB%', 'K%', 'wRC+', 'wOBA', 'ISO', 'WAR']
-df_subset = df[columns_of_interest]
-
-# Filter to players with 50+ plate appearances
-df_filtered = df_subset[df_subset['PA'] >= 50]
-
-# Sort by wRC+ descending
+df_filtered = df[df['PA'] >= 50][columns_of_interest]
 df_sorted = df_filtered.sort_values(by='WAR', ascending=False)
-
-# Show top 10 hitters by wRC+
+print("\nTop 10 Hitters by WAR:")
 print(df_sorted.head(10))
 
-from pybaseball import statcast_batter, playerid_lookup
-from datetime import datetime, timedelta
-
+# ---------------------------------------
+# 4. Statcast for Juan Soto (Last 14 Days)
+# ---------------------------------------
 print("\nStatcast Data for Juan Soto (Last 14 Days):")
-first_name = "Juan"
-last_name = "Soto"
-
-# Lookup player ID
-player_info = playerid_lookup(last_name, first_name)
-
-if player_info.empty:
+soto_info = playerid_lookup('soto', 'juan')
+if soto_info.empty:
     print("Error: Player not found.")
 else:
-    player_id = player_info.iloc[0]["key_mlbam"]
-
-    # Get data from past 14 days
+    soto_id = soto_info.iloc[0]["key_mlbam"]
     today = datetime.today().date()
     start_date = today - timedelta(days=14)
+    soto_data = statcast_batter(start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d"), soto_id)
 
-    df_statcast = statcast_batter(start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d"), player_id)
-
-    if df_statcast.empty:
+    if soto_data.empty:
         print("No statcast data found for the last 14 days.")
     else:
-        print(df_statcast.head())
+        print(soto_data.head())
 
-    print(df_statcast.columns)
-    print(df_statcast.head())
+# ---------------------------------------
+# 5. Statcast: David Ortiz Batting
+# ---------------------------------------
+print("\nDavid Ortiz Statcast Data:")
+ortiz_info = playerid_lookup('ortiz', 'david')
+if not ortiz_info.empty:
+    ortiz_id = ortiz_info.iloc[0]['key_mlbam']
+    
+    # Filter all events where he was the batter
+    data_all = statcast('2016-04-01', '2016-06-01')  # Ortiz's final season
+    data_batter = data_all[data_all['batter'] == ortiz_id]
+    print("Ortiz Batting Events Columns:", data_batter.columns.tolist())
+
+    # Historical batter stats
+    ortiz_stats = statcast_batter('2008-04-01', '2017-07-15', ortiz_id)
+    print("Ortiz Batting Stats Columns:", ortiz_stats.columns.tolist())
+else:
+    print("David Ortiz not found.")
+
+# ---------------------------------------
+# 6. Statcast: Justin Verlander Pitching
+# ---------------------------------------
+print("\nJustin Verlander Statcast Data:")
+verlander_info = playerid_lookup('verlander', 'justin')
+if not verlander_info.empty:
+    verlander_id = verlander_info.iloc[0]['key_mlbam']
+
+    data_all_pitching = statcast('2024-04-01', '2024-06-01')  # Update range as needed
+    data_pitcher = data_all_pitching[data_all_pitching['pitcher'] == verlander_id]
+    print("Verlander Pitching Events Columns:", data_pitcher.columns.tolist())
+
+    # Historical pitching stats
+    verlander_stats = statcast_pitcher('2008-04-01', '2017-07-15', verlander_id)
+    print("Verlander Pitching Stats Columns:", verlander_stats.columns.tolist())
+else:
+    print("Justin Verlander not found.")
+
+
+print(data_pitcher)
+print(verlander_stats)
