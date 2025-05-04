@@ -4,7 +4,9 @@ from pybaseball import (
     statcast,
     statcast_batter,
     statcast_pitcher,
-    playerid_lookup
+    playerid_lookup,
+    pitching_stats,
+    batting_stats
 )
 import pandas as pd
 from datetime import datetime, timedelta
@@ -63,6 +65,7 @@ else:
     today = datetime.today().date()
     start_date = today - timedelta(days=14)
     soto_data = statcast_batter(start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d"), soto_id)
+    soto_data.to_excel("C:\\Users\\Stephen\\Desktop\\SolariValinor\\MLB\\soto_statcast_batter.xlsx", index=False)
 
     if soto_data.empty:
         print("No statcast data found for the last 14 days.")
@@ -96,16 +99,22 @@ verlander_info = playerid_lookup('verlander', 'justin')
 if not verlander_info.empty:
     verlander_id = verlander_info.iloc[0]['key_mlbam']
 
-    data_all_pitching = statcast('2024-04-01', '2024-06-01')  # Update range as needed
+    data_all_pitching = statcast('2024-04-01', '2024-05-01')  # Update range as needed
     data_pitcher = data_all_pitching[data_all_pitching['pitcher'] == verlander_id]
     print("Verlander Pitching Events Columns:", data_pitcher.columns.tolist())
 
+    data_pitcher.to_excel("C:\\Users\\Stephen\\Desktop\\SolariValinor\\MLB\\pitcher_stats.xlsx", index=False)
+
     # Historical pitching stats
-    verlander_stats = statcast_pitcher('2008-04-01', '2017-07-15', verlander_id)
+    verlander_stats = statcast_pitcher('2008-04-01', '2019-07-15', verlander_id)
     print("Verlander Pitching Stats Columns:", verlander_stats.columns.tolist())
+
+    data_pitcher.to_excel("C:\\Users\\Stephen\\Desktop\\SolariValinor\\MLB\\verlander_statcast_pitcher.xlsx", index=False)
 else:
     print("Justin Verlander not found.")
 
 
 print(data_pitcher)
 print(verlander_stats)
+
+
