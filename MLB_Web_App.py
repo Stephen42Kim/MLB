@@ -1,4 +1,3 @@
-
 # STATCAST PITCHER
 from pybaseball import statcast_pitcher
 from pybaseball import playerid_lookup
@@ -97,35 +96,35 @@ print(data.columns.tolist())
 # pitch_type: The type of pitch to retrieve movement data on. Options include 
 # ["FF", "SIFT", "CH", "CUKC", "FC", "SL", "FS", "ALL"]. Pitch names also allowed. 
 # If no value is specified, it will default to "FF".
-from python import statcast_pitcher_pitch_movement
+#from pybaseball import statcast_pitcher_pitch_movement
 
 # get data on qualified fastballs in 2019
-data = statcast_pitcher_pitch_movement(2019)
-print("STATCAST PITCHER QUALIFIED FASTBALL DATA 2019")
-print(data)
+#data = statcast_pitcher_pitch_movement(2019)
+#print("STATCAST PITCHER QUALIFIED FASTBALL DATA 2019")
+#print(data)
 
 # get data on pitchers who threw 30 or more changeups in 2019
-data = statcast_pitcher_pitch_movement(2019, minP=30, pitch_type="CH")
-print("STATCAST PITCHER WHO THREW 30 OR MORE CHANGEUPS IN 2019")
-print(data)
-print(data.columns.tolist())
+#data = statcast_pitcher_pitch_movement(2019, minP=30, pitch_type="CH")
+#print("STATCAST PITCHER WHO THREW 30 OR MORE CHANGEUPS IN 2019")
+#print(data)
+#print(data.columns.tolist())
 
 
 # STATCAST PITCHER ACTIVE SPIN
 # retrieves active spin stats on all of a pitchers' pitches in a given year.
 # statcast_pitcher_active_spin(2019, minP=250)
-from python import statcast_pitcher_active_spin
+#from pybaseball import statcast_pitcher_active_spin
 
 # get data on qualified pitchers in 2019
-data = statcast_pitcher_active_spin(2019)
-print("STATCAST PITCHER SPIN DATA 2019")
-print(data)
+#data = statcast_pitcher_active_spin(2019)
+#print("STATCAST PITCHER SPIN DATA 2019")
+#print(data)
 
 # get data on pitchers who threw 100 or more pitches in 2019
-data = statcast_pitcher_active_spin(2019, minP=100)
-print("STATCAST PITCHER SPIN DATA 2019 MIN 100 PITCHES")
-print(data)
-print(data.columns.tolist())
+#data = statcast_pitcher_active_spin(2019, minP=100)
+#print("STATCAST PITCHER SPIN DATA 2019 MIN 100 PITCHES")
+#print(data)
+#print(data.columns.tolist())
 
 
 # STATCAST PITCHER PERCENTILE RANKS
@@ -322,3 +321,13 @@ data = statcast_batter_pitch_arsenal(2019, 100)
 print("STATCAST BATTER PITCH ARSENAL 2019 MIN 100PA")
 print(data)
 print(data.columns.tolist())
+
+
+
+
+
+
+
+
+
+
