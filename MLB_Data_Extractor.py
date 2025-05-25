@@ -1,4 +1,5 @@
 # Import packages
+
 from pybaseball import (
     batting_stats,
     statcast,
@@ -74,7 +75,7 @@ else:
 
 # ---------------------------------------
 # 5. Statcast: David Ortiz Batting
-# ---------------------------------------
+# ---------------------------------------   
 print("\nDavid Ortiz Statcast Data:")
 ortiz_info = playerid_lookup('ortiz', 'david')
 if not ortiz_info.empty:
@@ -116,5 +117,4 @@ else:
 
 print(data_pitcher)
 print(verlander_stats)
-
 
