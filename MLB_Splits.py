@@ -7,6 +7,8 @@ import requests
 
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, message=".*errors='ignore'.*")
+pd.set_option('display.max_seq_items', None)  # disables truncation for sequences
+
 
 
 # Get the split stats and player info for batters
@@ -107,14 +109,14 @@ batting_df = b_splits['Adley Rutschman']['splits']
 print(batting_df)
 print(batting_df.index.names)
 
-print(batting_df.index.get_level_values('Split'))
+print(list(batting_df.index.get_level_values('Split')))
 
 pitching_df = p_splits['Paul Skenes']['splits'][1]
 
 print(pitching_df)
 print(pitching_df.index.names)
 
-print(pitching_df.index.get_level_values('Split'))
+print(list(pitching_df.index.get_level_values('Split')))
 
 
 #for name, (df, info) in b_splits.items():
